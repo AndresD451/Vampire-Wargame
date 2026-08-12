@@ -4,6 +4,8 @@
  */
 package Pieza;
 
+import GUI.Tablero;
+
 /**
  *
  * @author user
@@ -21,7 +23,7 @@ public class Necromante extends Pieza {
     
     public void atacarConLanza(Pieza objetivo){
         int danoLanza = ataque / 2;
-        objetivo.vida = danoLanza;
+        objetivo.vida -= danoLanza;
         
         if (objetivo.vida<0){
             objetivo.vida = 0;
@@ -32,6 +34,14 @@ public class Necromante extends Pieza {
     public void atacarATravesDeZombie (Pieza objetivo, Zombie zombiePropio){
         int danoZombie = 1;
         objetivo.recibirDaño(danoZombie);
+    }
+    
+    public void invocarZombie(Tablero tablero, int fila, int columna){
+        if (!tablero.estVacia(fila, columna)){
+            throw new IllegalStateException ("Solo es posible invocarlo en una casilla vacia");
+        }
+        Zombie nuevoZombie = new Zombie (this.color);
+        tablero.setPieza(fila, columna, nuevoZombie);
     }
     
     
