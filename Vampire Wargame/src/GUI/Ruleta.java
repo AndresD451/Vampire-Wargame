@@ -17,7 +17,7 @@ public class Ruleta {
     private String resultadoActual = null;
     
     public int girar(){
-     return random.nextInt();
+     return random.nextInt(6);
 }
     
     public String getResultadoActual(){

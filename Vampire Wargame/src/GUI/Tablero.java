@@ -39,12 +39,30 @@ public class Tablero {
         
         
         //Piezas blancas (jugador 1)
-  
+        piezasBlancas[0] = new HombreLobo(3,6,3,"BLANCO");
+        piezasBlancas[1] = new Vampiro(3,5,2,"BLANCO");
+        piezasBlancas[2] = new Muerte(4,5,2,"BLANCO");
+        piezasBlancas[3] = new Muerte(4,5,2,"BLANCO");
+        piezasBlancas[4] = new Vampiro(3,5,2,"BLANCO");
+        piezasBlancas[5] = new HombreLobo(3,5,3,"BLANCO");
         for (int i = 0; i < 6; i++)
             casillas[5][i] = piezasBlancas[i];
         
         
     }
+    
+    
+    public int[] buscarPosicion(Pieza pieza){
+        for (int fila = 0; fila < SIZE; fila++){
+            for (int columna = 0; columna < SIZE; columna++){
+                if (casillas[fila][columna] == pieza){
+                    return new int[]{fila,columna};
+                }
+            }
+        }
+        return null;
+    }
+    
     
     public Pieza[] getPiezasDe(String color){
         return color.equals("BLANCO") ? piezasBlancas : piezasNegras;
@@ -70,7 +88,7 @@ public class Tablero {
         for (int fila = 0; fila < SIZE; fila++){
             for (int columna = 0; columna < SIZE; columna++){
                 Pieza p = casillas[fila][columna];
-                if (p != null && p.getClass().equals(color)){
+                if (p != null && p.getColor().equals(color)){
                     contador++;
                 }
             }

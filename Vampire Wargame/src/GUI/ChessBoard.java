@@ -39,8 +39,10 @@ public class ChessBoard extends JFrame {
     private final Tablero tablero;
     private int filaSeleccionada = -1;
     private int columnaSeleccionada = -1;
+    private int filaMarcada = -1;
+    private int columnaMarcada = -1;
     private String jugadorActual = "BLANCO";
-    private String tipoPermitido = null;
+  
     private int girosUsados = 0;
     private JLabel labelTurno;
     private JButton botonGirar;
@@ -166,6 +168,12 @@ public class ChessBoard extends JFrame {
         panel.add(Box.createRigidArea(new Dimension(0,20)));
         panel.add(botonGirar);
         
+        JButton botonMiedoso = new JButton ("Retirarse");
+        botonMiedoso.setAlignmentX(Component.CENTER_ALIGNMENT);
+        botonMiedoso.addActionListener(e -> retirarse());
+        
+        panel.add(Box.createRigidArea(new Dimension(0,20)));
+        panel.add(botonMiedoso);
         
         return panel;
     }
@@ -186,7 +194,7 @@ public class ChessBoard extends JFrame {
      
      int girosPermitidos = Ruleta.girosPermitidos(piezasPerdidas);
      
-     if (girosUsados >- girosPermitidos){
+     if (girosUsados >= girosPermitidos){
          JOptionPane.showMessageDialog(this, "Sin Giros, Pierdes turno");
          terminarTurno();
          return;
@@ -211,6 +219,14 @@ public class ChessBoard extends JFrame {
         }
         else{
             piezaPermitida = piezaResultado;
+            
+            int[] posicion = tablero.buscarPosicion(piezaPermitida);
+            if (posicion != null){
+                filaMarcada = posicion[0];
+                columnaMarcada = posicion[1];
+                resaltarCasilla(posicion[0], posicion[1], true);
+            }
+            
             JOptionPane.showMessageDialog(this, "Debes mover esta pieza");
             botonGirar.setEnabled(true);
         }
@@ -233,16 +249,17 @@ public class ChessBoard extends JFrame {
               return;
           }
           
-          if (tipoPermitido == null){
+          if (piezaPermitida == null){
               System.out.println("Primero gira la ruleta");
               return;
           }
           
-          
-          if (pieza != piezaPermitida){
-              System.out.println("Debes mover una pieza de tipo " +tipoPermitido);
+          if(pieza!= piezaPermitida){
+              System.out.println("Debes mover la pieza que indico la ruleta");
               return;
           }
+          
+          
           
           filaSeleccionada = fila;
           columnaSeleccionada = columna;
@@ -278,6 +295,23 @@ public class ChessBoard extends JFrame {
           
       }
       
+      
+      private void resaltarPiezaExacta(int fila, int columna, boolean resaltar){
+          JButton boton = casillas[fila][columna];
+          if(resaltar){
+              boton.setBackground(Color.GREEN);
+          }else{
+              if ((fila + columna) % 2 == 0){
+                  boton.setBackground(new Color (220,224,230));
+              }
+              else{
+                  boton.setBackground(new Color(75,85,99));
+              }
+          }
+      }
+      
+      
+      
       private void ejecutarAtaqueNormal(Pieza atacante, Pieza objetivo, int filaObjetivo, int columnaObjetivo){
           objetivo.recibirDaño(atacante.getAtaque());
           
@@ -287,6 +321,9 @@ public class ChessBoard extends JFrame {
           }else{
               System.out.println("Pieza destuida");
               tablero.setPieza(filaObjetivo, columnaObjetivo, null);
+              actualizarTableroVisual();
+              validarVictoria();
+              return;
           }
           
           actualizarTableroVisual();
@@ -416,6 +453,13 @@ public class ChessBoard extends JFrame {
                         piezaOrigen.habilidadEspecial(piezaDestino);
                         actualizarTableroVisual();
                         System.out.println("Habilidad especial lanzada al oponente");
+                       
+                        if(!piezaDestino.estaViva()){
+                            tablero.setPieza(filaDestino, columnaDestino, null);
+                            actualizarTableroVisual();
+                            validarVictoria();
+                        }
+                        
                         terminarTurno();
                         
                     } catch(UnsupportedOperationException e){
@@ -436,6 +480,7 @@ public class ChessBoard extends JFrame {
                     if (!piezaDestino.estaViva()){
                         tablero.setPieza(filaDestino, columnaDestino, null);
                         System.out.println("Pieza destruida por la lanza");
+                        validarVictoria();
                     }
                     else{
                         System.out.println("Objetivo dañado con lanza. Vida restante" + piezaDestino.getVida());
@@ -454,6 +499,7 @@ public class ChessBoard extends JFrame {
                         if(!piezaDestino.estaViva()){
                             tablero.setPieza(filaDestino, columnaDestino, null);
                             System.out.println("Pieza destruida por el Zombie");
+                            validarVictoria();
                         } else{
                             System.out.println("Ataque a través de Zombie. Vida restante: " +piezaDestino);
                         }
@@ -475,8 +521,14 @@ public class ChessBoard extends JFrame {
       
       private void terminarTurno(){
           jugadorActual = jugadorActual.equals("BLANCO") ? "NEGRO" : "BLANCO";
+          if (filaMarcada != -1){
+          resaltarPiezaExacta(filaMarcada,columnaMarcada, false);
+          filaMarcada = -1;
+          columnaMarcada = -1;
+      }
+          
           labelTurno.setText("Truno: " +jugadorActual);
-          tipoPermitido = null;
+          piezaPermitida = null;
           girosUsados = 0;
           botonGirar.setEnabled(true);
           
@@ -490,7 +542,26 @@ public class ChessBoard extends JFrame {
           System.out.println("Turno actual es de: " +jugadorActual);
           
       }
+      
+      
+      private void validarVictoria(){
+          String colorRival = jugadorActual.equals("BLANCO") ? "NEGRO" : "BLANCO";
+          
+          if(tablero.contarPiezasVivas(colorRival) == 0 ){
+              JOptionPane.showMessageDialog(this, jugadorActual + " vencio a " +colorRival + ". Felicidades, has ganado 3 puntos!", "Fin de la partida" , JOptionPane.INFORMATION_MESSAGE);
+              dispose();
+          }
+      }
     
+      private void retirarse(){
+          int confirmacion = JOptionPane.showConfirmDialog(this, "Deseas retirarte? (ADVERTENCIA: ACCION IRREVERSIBLE)", "Confirmar retiro", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+          
+          if (confirmacion == JOptionPane.YES_OPTION){
+              String ganador = jugadorActual.equals("BLANCO") ? "NEGRO" : "BLANCO";
+              JOptionPane.showMessageDialog(this, jugadorActual + " se ha retirado." + "Felicidades " +ganador +", has ganado 3 puntos.", "Fin de juego!", JOptionPane.INFORMATION_MESSAGE);
+              dispose();
+          }
+      }
 
       
       private String obtenerEtiqueta(Pieza pieza) {

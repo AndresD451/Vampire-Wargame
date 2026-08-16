@@ -129,13 +129,7 @@ public class RuletaPanel extends JPanel {
     
     
     public void girarHacia(int resultado, Runnable onFinish){
-        int indiceDestino = 0;
-        for(int i = 0; i < NUM_PIEZAS; i++){
-            if (PIEZAS[i].equals(resultado)){
-                indiceDestino = i;
-                break;
-            }
-        }
+        int indiceDestino = resultado;
         double anguloPiezasDestino = indiceDestino * ANGULO_POR_PIEZAS + ANGULO_POR_PIEZAS / 2;
         double vueltasExtra = 5 * 360;
         double anguloFinal = anguloActual - (anguloActual % 360) + vueltasExtra - anguloPiezasDestino;
