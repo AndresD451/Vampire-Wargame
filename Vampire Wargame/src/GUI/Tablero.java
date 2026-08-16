@@ -5,7 +5,7 @@
 package GUI;
 
 import Pieza.HombreLobo;
-import Pieza.Necromante;
+import Pieza.Muerte;
 import Pieza.Pieza;
 import Pieza.Vampiro;
 
@@ -17,7 +17,8 @@ public class Tablero {
     
     private static final int SIZE = 6;
     private Pieza[][] casillas;
-    
+    private Pieza[] piezasBlancas = new Pieza[6];
+    private Pieza[] piezasNegras = new Pieza[6];
     
     public Tablero(){
         casillas = new Pieza[SIZE][SIZE];
@@ -27,24 +28,26 @@ public class Tablero {
     
     private void colocarPiezasIniciales(){
        //Piezas negras (jugador 2)
-        casillas[0][0] = new HombreLobo (3,6,3,"NEGRO");
-        casillas[0][1] = new Vampiro(3,5,2,"NEGRO");
-        casillas[0][2] = new Necromante(4,5,2,"NEGRO");
-        casillas[0][3] = new Necromante(4,5,2,"NEGRO");
-        casillas[0][4] = new Vampiro(3,5,2,"NEGRO");
-        casillas[0][5] = new HombreLobo (3,6,3,"NEGRO");
+       piezasNegras[0] = new HombreLobo(3,6,3,"NEGRO");
+       piezasNegras[1] = new Vampiro (3,5,2,"NEGRO");
+       piezasNegras[2] = new Muerte(4,5,2,"NEGRO");
+       piezasNegras[3] = new Muerte (4,5,2,"NEGRO");
+       piezasNegras[4] = new Vampiro(3,5,2,"NEGRO");
+       piezasNegras[5] = new HombreLobo(3,6,3,"NEGRO");
+        for (int i = 0; i < 6; i++)
+            casillas[0][i] = piezasNegras[i];
         
         
         //Piezas blancas (jugador 1)
-        casillas[5][0] = new HombreLobo(3,6,3,"BLANCO");
-        casillas[5][1] = new Vampiro (3,5,2,"BLANCO");
-        casillas[5][2] = new Necromante(4,5,2,"BLANCO");
-        casillas[5][3] = new Necromante(4,5,2,"BLANCO");
-        casillas[5][4] = new Vampiro (3,5,2,"BLANCO");
-        casillas[5][5] = new HombreLobo(3,6,3,"BLANCO");
+  
+        for (int i = 0; i < 6; i++)
+            casillas[5][i] = piezasBlancas[i];
         
         
-        
+    }
+    
+    public Pieza[] getPiezasDe(String color){
+        return color.equals("BLANCO") ? piezasBlancas : piezasNegras;
     }
     
     public Pieza getPieza (int fila, int columna){
@@ -61,6 +64,50 @@ public class Tablero {
     public boolean estVacia(int fila, int columna){
         return casillas[fila][columna] == null;
     }
+    
+    public int contarPiezasVivas(String color){
+        int contador = 0;
+        for (int fila = 0; fila < SIZE; fila++){
+            for (int columna = 0; columna < SIZE; columna++){
+                Pieza p = casillas[fila][columna];
+                if (p != null && p.getClass().equals(color)){
+                    contador++;
+                }
+            }
+        }
+        return contador;
+    }
+    
+    
+    private boolean coincideTipo(Pieza p, String tipo){
+        switch (tipo){
+            case "HombreLobo":
+                return p instanceof HombreLobo;
+            case "Vampiro":
+                return p instanceof Vampiro;
+            case "Muerte": 
+                return p instanceof Muerte;    
+            default:
+                return false;
+        }
+    }
+    
+    
+    public int contarPiezasPorTipo(String color, String tipo){
+        int contador = 0;
+        for(int fila = 0; fila <SIZE; fila++){
+            for (int columna = 0; columna < SIZE; columna++){
+                Pieza p = casillas[fila][columna];
+                if (p!= null && p.getColor().equals(color) && coincideTipo(p,tipo)){
+                    contador++;
+                }
+            }
+        }
+        return contador;
+    }
+    
+    
+    
     
     
     

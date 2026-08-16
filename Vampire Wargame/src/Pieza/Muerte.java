@@ -10,9 +10,9 @@ import GUI.Tablero;
  *
  * @author user
  */
-public class Necromante extends Pieza {
+public class Muerte extends Pieza {
     
-    public Necromante (int ataque, int vida, int escudo, String color){
+    public Muerte (int ataque, int vida, int escudo, String color){
         super(ataque, vida, escudo, color);
     }
 
