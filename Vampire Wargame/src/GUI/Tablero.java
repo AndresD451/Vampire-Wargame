@@ -84,16 +84,23 @@ public class Tablero {
     }
     
     public int contarPiezasVivas(String color){
-        int contador = 0;
-        for (int fila = 0; fila < SIZE; fila++){
-            for (int columna = 0; columna < SIZE; columna++){
-                Pieza p = casillas[fila][columna];
-                if (p != null && p.getColor().equals(color)){
-                    contador++;
-                }
-            }
+     return contarOpt(color,0,0);
+    }
+    
+    
+    
+    private int contarOpt (String color, int fila, int columna){
+        if (fila >= SIZE){
+            return 0;
         }
-        return contador;
+        
+        int siguienteFila = (columna == SIZE - 1) ? fila + 1 : fila;
+        int siguienteColumna = (columna == SIZE - 1) ? 0 : columna + 1;
+        
+        Pieza  p = casillas[fila][columna];
+        int cuentaActual = (p != null && p.getColor().equals(color) && p.estaViva()) ? 1 : 0;
+        return cuentaActual + contarOpt(color, siguienteFila, siguienteColumna);
+        
     }
     
     

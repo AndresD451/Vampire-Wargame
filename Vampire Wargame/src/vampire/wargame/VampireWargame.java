@@ -4,6 +4,8 @@
  */
 package vampire.wargame;
 
+import GUI.Login;
+import Usuarios.GestorJugadores;
 import GUI.ChessBoard;
 import javax.swing.SwingUtilities;
 
@@ -18,8 +20,9 @@ public class VampireWargame {
      */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-           ChessBoard ventana = new ChessBoard();
-           ventana.setVisible(true);
+        GestorJugadores gestor = new GestorJugadores();
+        Login login = new Login(gestor);
+        login.setVisible(true);
         });
     }
     
