@@ -6,17 +6,17 @@ package GUI;
 
 import Usuarios.GestorJugadores;
 import Usuarios.Usuario;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import javax.swing.BorderFactory;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+
 
 /**
  *
@@ -36,12 +36,13 @@ public class MenuPrincipal extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         
-        JPanel panel = new JPanel();
+        FondoPanel panel = new FondoPanel("/FICHAS/fondo_menu.png"); 
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(30,40,30,40));
+        panel.setOpaque(false); 
         
         JLabel titulo = new JLabel("Bienvenido, " +usuarioActivo.getUsuario());
         titulo.setFont(new Font("Fraktur",Font.BOLD,18));
+        titulo.setForeground(Color.WHITE);
         titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JButton btnJugar = new JButton("Jugar Vampire Wargame");
@@ -57,6 +58,10 @@ public class MenuPrincipal extends JFrame {
         btnHistorial.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnHistorial.addActionListener(e -> abrirHistorial());
         
+        JButton btnRanking = new JButton ("Ranking de Jugadores");
+        btnRanking.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnRanking.addActionListener(e -> abrirRanking());
+        
         JButton btnCerrarSesion = new JButton ("Cerrar Sesión");
         btnCerrarSesion.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnCerrarSesion.addActionListener(e -> cerrarSesion());
@@ -68,6 +73,8 @@ public class MenuPrincipal extends JFrame {
         panel.add(btnCuenta);
         panel.add(Box.createRigidArea(new Dimension(0,10)));
         panel.add(btnHistorial);
+        panel.add(Box.createRigidArea(new Dimension(0,10)));
+        panel.add(btnRanking);
         panel.add(Box.createRigidArea(new Dimension(0,10)));
         panel.add(btnCerrarSesion);
         
@@ -94,12 +101,18 @@ public class MenuPrincipal extends JFrame {
     }
     
     private void abrirHistorial(){
-    JOptionPane.showMessageDialog(this, "Luego");
+    dispose();
+    new HistorialPartidasGUI(gestor, usuarioActivo).setVisible(true);
 }
     
     private void cerrarSesion(){
         dispose();
         new Login(gestor).setVisible(true);
+    }
+    
+    private void abrirRanking(){
+        dispose();
+        new Ranking(gestor, usuarioActivo).setVisible(true);
     }
     
 }

@@ -6,6 +6,7 @@ package GUI;
 
 import Usuarios.GestorJugadores;
 import Usuarios.Usuario;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -39,21 +40,24 @@ public class Login extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         
-        JPanel panel = new JPanel ();
-        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(30,40,30,40));
+       FondoPanel panel = new FondoPanel("/FICHAS/fondo_menu.png"); 
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setOpaque(false);
         
         JLabel titulo = new JLabel ("Vampire Wargame");
        titulo.setFont(new Font("Fraktur", Font.BOLD,22));
+       titulo.setForeground(Color.WHITE);
        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
        
        JLabel labelUsuario = new JLabel("Usuario:");
+       labelUsuario.setForeground(Color.WHITE);
        labelUsuario.setAlignmentX(Component.CENTER_ALIGNMENT);
        campoUsuario = new JTextField();
        campoUsuario.setMaximumSize(new Dimension(250,30));
        campoUsuario.setAlignmentX(Component.CENTER_ALIGNMENT);
        
        JLabel labelContra = new JLabel ("Contraseña");
+       labelContra.setForeground(Color.WHITE);
        labelContra.setAlignmentX(Component.CENTER_ALIGNMENT);
        campoContra = new JPasswordField();
        campoContra.setMaximumSize(new Dimension(250,30));

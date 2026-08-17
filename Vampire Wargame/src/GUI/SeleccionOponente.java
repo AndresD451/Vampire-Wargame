@@ -6,6 +6,7 @@ package GUI;
 
 import Usuarios.GestorJugadores;
 import Usuarios.Usuario;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -49,12 +50,13 @@ public class SeleccionOponente extends JFrame {
             return;
         }
         
-        JPanel panel = new JPanel();
+         FondoPanel panel = new FondoPanel("/FICHAS/fondo_menu.png"); 
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(30,40,30,40));
+        panel.setOpaque(false); 
         
         JLabel titulo = new JLabel ("Elige tu contricante");
         titulo.setFont(new Font("Fraktur",Font.BOLD,18));
+        titulo.setForeground(Color.WHITE);
         titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         comboOponentes = new JComboBox<>(disponibles.toArray(new Usuario[0]));
@@ -67,9 +69,12 @@ public class SeleccionOponente extends JFrame {
         btnIniciar.addActionListener(e ->  iniciarPartida());
         
         
-        JButton btnCancelar = new JButton ("Cancelar");
-        btnCancelar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnCancelar.addActionListener(e -> dispose());
+             JButton btnCancelar = new JButton ("Cancelar");
+            btnCancelar.setAlignmentX(Component.CENTER_ALIGNMENT);
+            btnCancelar.addActionListener(e -> {
+         dispose();
+        new MenuPrincipal(gestor, jugador1).setVisible(true);
+    });
         
         panel.add(titulo);
         panel.add(Box.createRigidArea(new Dimension(0,20)));

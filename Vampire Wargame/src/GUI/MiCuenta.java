@@ -6,6 +6,7 @@ package GUI;
 
 import Usuarios.GestorJugadores;
 import Usuarios.Usuario;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -38,27 +39,32 @@ public class MiCuenta extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         
-        JPanel panel = new JPanel();
+        FondoPanel panel = new FondoPanel("/FICHAS/fondo_menu.png"); 
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(30,40,30,40));
+        panel.setOpaque(false); 
         
         JLabel titulo = new JLabel ("Mi cuenta");
-        titulo.setFont(new Font("Fraktur", Font.BOLD, 20));
+        titulo.setFont(new Font("Fraktur",Font.BOLD,18));
+        titulo.setForeground(Color.WHITE);
         titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         String fecha = sdf.format(usuarioActivo.getFechaIngreso().getTime());
         
         JLabel infoUsuario = new JLabel ("Puntos: " + usuarioActivo.getPuntos());
+        infoUsuario.setForeground(Color.WHITE);
         infoUsuario.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JLabel infoPuntos = new JLabel ("Puntos: " +usuarioActivo.getPuntos());
+        infoPuntos.setForeground(Color.WHITE);
         infoPuntos.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JLabel infoFecha = new JLabel("Fecha de ingreso: " +fecha);
+        infoFecha.setForeground(Color.WHITE);
         infoFecha.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JLabel infoActivo = new JLabel("Activo: " +(usuarioActivo.isActivo() ? "Si": "No"));
+        infoActivo.setForeground(Color.WHITE);
         infoActivo.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JButton btnCambiarContra = new JButton("Cambiar contraseña");

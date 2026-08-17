@@ -25,7 +25,7 @@ public abstract class Pieza {
     public abstract void habilidadEspecial (Pieza objetivo);
     
     
-    public void recibirDaño(int dano){
+    public final void recibirDaño(int dano){
         if (escudo > 0){
             if (dano<= escudo){
                 escudo -= dano;
@@ -47,7 +47,7 @@ public abstract class Pieza {
         
     }
     
-    public boolean estaViva(){
+    public final boolean estaViva(){
         return vida > 0;
     }
 

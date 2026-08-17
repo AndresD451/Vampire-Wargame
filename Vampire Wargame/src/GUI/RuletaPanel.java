@@ -25,7 +25,7 @@ import javax.swing.Timer;
 public class RuletaPanel extends JPanel {
     
     private static final String[] PIEZAS = {
-        "HombreLobo", "Vampiro", "Muerte", "Muerte", "Vampiro", "HombreLobo"
+        "Muerte", "Vampiro", "HombreLobo", "HombreLobo", "Vampiro", "Muerte"
     };
     
     private static final int NUM_PIEZAS = PIEZAS.length;

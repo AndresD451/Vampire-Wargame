@@ -27,6 +27,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 
 
@@ -53,6 +56,10 @@ public class ChessBoard extends JFrame {
     private final GestorJugadores gestor;
     private final Usuario jugadorBlanco;
     private final Usuario jugadorNegro;
+    private JTextArea areaAdvertencias;
+    private JTextArea areaReportes;
+    private JTextArea areaEstadisticas;
+
     
     
     public ChessBoard(GestorJugadores gestor, Usuario jugador1, Usuario jugador2){
@@ -63,7 +70,7 @@ public class ChessBoard extends JFrame {
         setTitle ("Vampire Wargame");
         setSize(700,480);
         setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         
@@ -105,7 +112,8 @@ public class ChessBoard extends JFrame {
         
        
         
-        add(panelTablero, BorderLayout.CENTER);
+        add(envolverConCoordenadas(panelTablero),BorderLayout.CENTER);
+        add(crearPanelInfo(), BorderLayout.WEST);
         add(panelRuleta, BorderLayout.EAST);
         
         actualizarTableroVisual();
@@ -142,6 +150,64 @@ public class ChessBoard extends JFrame {
         
        
     }
+    
+   private JPanel envolverConCoordenadas(JPanel panelTablero) {
+        JPanel contenedor = new JPanel(new BorderLayout());
+
+        JPanel panelFilas = new JPanel(new GridLayout(SIZE, 1));
+        for (int i = 1; i <= SIZE; i++) {
+            JLabel label = new JLabel(String.valueOf(i), SwingConstants.CENTER);
+            label.setFont(new Font("Arial", Font.BOLD, 14));
+            panelFilas.add(label);
+        }
+
+        JPanel panelColumnas = new JPanel(new GridLayout(1, SIZE));
+        for (int i = 1; i <= SIZE; i++) {
+            JLabel label = new JLabel(String.valueOf(i), SwingConstants.CENTER);
+            label.setFont(new Font("Arial", Font.BOLD, 14));
+            panelColumnas.add(label);
+        }
+
+        contenedor.add(panelFilas, BorderLayout.WEST);
+        contenedor.add(panelTablero, BorderLayout.CENTER);
+        contenedor.add(panelColumnas, BorderLayout.SOUTH);
+
+        return contenedor;
+    } 
+   
+   private JPanel crearPanelInfo() {
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    panel.setPreferredSize(new Dimension(220, 0));
+
+    areaAdvertencias = new JTextArea(4, 20);
+    areaAdvertencias.setEditable(false);
+    areaAdvertencias.setLineWrap(true);
+    areaAdvertencias.setWrapStyleWord(true);
+    JScrollPane scrollAdvertencias = new JScrollPane(areaAdvertencias);
+    scrollAdvertencias.setBorder(BorderFactory.createTitledBorder("Advertencias"));
+
+    areaReportes = new JTextArea(10, 20);
+    areaReportes.setEditable(false);
+    areaReportes.setLineWrap(true);
+    areaReportes.setWrapStyleWord(true);
+    JScrollPane scrollReportes = new JScrollPane(areaReportes);
+    scrollReportes.setBorder(BorderFactory.createTitledBorder("Reportes"));
+
+    areaEstadisticas = new JTextArea(6, 20);
+    areaEstadisticas.setEditable(false);
+    areaEstadisticas.setLineWrap(true);
+    areaEstadisticas.setWrapStyleWord(true);
+    JScrollPane scrollEstadisticas = new JScrollPane(areaEstadisticas);
+    scrollEstadisticas.setBorder(BorderFactory.createTitledBorder("Vida / Escudo"));
+
+    panel.add(scrollAdvertencias);
+    panel.add(scrollReportes);
+    panel.add(scrollEstadisticas);
+
+    return panel;
+}
+    
     
     
     private String nombreJugadorActual(){
@@ -221,7 +287,6 @@ public class ChessBoard extends JFrame {
          else{
              tipoPermitido = resultado;
              JOptionPane.showMessageDialog(this, "Debes mover una pieza de tipo: " +resultado);
-             botonGirar.setEnabled(true);
          }
          
      });
@@ -234,22 +299,22 @@ public class ChessBoard extends JFrame {
               Pieza pieza = tablero.getPieza(fila, columna);
           
           if (pieza  == null){
-              System.out.println("Primer gira la ruleta");
+              mostrarAdvertencia("Primer gira la ruleta");
               return;
           }
           
           if (!pieza.getColor().equals(jugadorActual)){
-              System.out.println("No es tu turno, espera que el jugador contrario mueva su pieza");
+              mostrarAdvertencia("No es tu turno, espera que el jugador contrario mueva su pieza");
               return;
           }
           
           if (tipoPermitido == null){
-              System.out.println("Primero gira la ruleta");
+              mostrarAdvertencia("Primero gira la ruleta");
               return;
           }
           
           if(!coincideConTipo(pieza)){
-              System.out.println("Debes mover una pieza de tipo " +tipoPermitido);
+              mostrarAdvertencia("Debes mover una pieza de tipo " +tipoPermitido);
               return;
           }
           
@@ -258,7 +323,9 @@ public class ChessBoard extends JFrame {
           filaSeleccionada = fila;
           columnaSeleccionada = columna;
           resaltarCasilla (fila,columna,true);
-          System.out.println("Pieza seleccionada en (" + fila + "," + columna + ")");
+          resaltarCasilla(fila,columna,true);
+          mostrarAdvertencia("");
+          mostrarEstadisticas(pieza);
           
           
           }
@@ -308,16 +375,21 @@ public class ChessBoard extends JFrame {
       
       private void ejecutarAtaqueNormal(Pieza atacante, Pieza objetivo, int filaObjetivo, int columnaObjetivo){
           objetivo.recibirDaño(atacante.getAtaque());
+          String nombreAtacante = jugadorActual.equals("BLANCO") ? jugadorBlanco.getUsuario() : jugadorNegro.getUsuario();
+          String nombreObjetivo = jugadorActual.equals("BLANCO") ? jugadorNegro.getUsuario() : jugadorBlanco.getUsuario();
           
           if (objetivo.estaViva()){
-              System.out.println("Se atacó la pieza. Le quedan " +objetivo.getEscudo()+  " de escudo y " +objetivo.getVida() + " de vida");
+              agregarReporte(nombreAtacante + " atacó a " + nombreObjetivo + 
+            " (" + obtenerEtiqueta(objetivo) + "). Le quedan " + objetivo.getEscudo() + 
+            " de escudo y " + objetivo.getVida() + " de vida.");
               
           }else{
-              System.out.println("Pieza destuida");
-              tablero.setPieza(filaObjetivo, columnaObjetivo, null);
-              actualizarTableroVisual();
-              validarVictoria();
-              return;
+            agregarReporte(nombreAtacante + " destruyó la pieza " + obtenerEtiqueta(objetivo) + 
+            " de " + nombreObjetivo + ".");
+        tablero.setPieza(filaObjetivo, columnaObjetivo, null);
+        actualizarTableroVisual();
+        validarVictoria();
+        return;
           }
           
           actualizarTableroVisual();
@@ -388,7 +460,7 @@ public class ChessBoard extends JFrame {
          
           
           if (distancia == 0){
-              System.out.println("Debes elegir una casilla distinta a la de origen.");
+              mostrarAdvertencia("Debes elegir una casilla distinta a la de origen.");
         return;
           }
           
@@ -396,15 +468,19 @@ public class ChessBoard extends JFrame {
            if (piezaOrigen instanceof Muerte){
                String[] opciones = {"Mover", "Invocar Zombie"};
                int seleccion = JOptionPane.showOptionDialog(this, "Qué deseas hacer?", "Necromante", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+               
+               if (seleccion == JOptionPane.CLOSED_OPTION){
+                   return;
+               }
         
            if (seleccion == 1){
                try{
                    ((Muerte) piezaOrigen).invocarZombie(tablero, filaDestino, columnaDestino);
                    actualizarTableroVisual();
-                   System.out.println("Zombie invocado en(" + filaDestino + "," + columnaDestino + ")");
+                   agregarReporte(nombreJugadorActual() + " invocó un Zombie en (" + (filaDestino+1) + "," + (columnaDestino+1) + ").");
                    terminarTurno();
                }catch(IllegalStateException e){
-                   JOptionPane.showMessageDialog(this, e.getMessage());
+                   mostrarAdvertencia(e.getMessage());
                }
                return;
                
@@ -415,25 +491,33 @@ public class ChessBoard extends JFrame {
            }
            
            if (distancia > piezaOrigen.getAlcanceMovimiento()){
-               System.out.println("Excede los limites del movimiento");
+               mostrarAdvertencia("Excede los limites del movimiento");
                return;
            }
            
            if (!caminoLibre(filaOrigen, columnaOrigen, filaDestino, columnaDestino)){
-               System.out.println("Movimiento inválido: camino bloqueado");
+               mostrarAdvertencia("Movimiento inválido: camino bloqueado");
            }
+           
+           String nombreMueve = nombreJugadorActual();
+           String etiquetaPieza = obtenerEtiqueta(piezaOrigen);
            
            tablero.setPieza(filaDestino, columnaDestino, piezaOrigen);
            tablero.setPieza(filaOrigen, columnaOrigen, null);
            actualizarTableroVisual();
-           System.out.println("Pieza ahora en posicion("+ filaOrigen + "," + columnaOrigen + ")");
+           agregarReporte(nombreMueve + " movió su " + etiquetaPieza + 
+            " de (" + (filaOrigen+1) + "," + (columnaOrigen+1) + ") a (" + (filaDestino+1) + "," + (columnaDestino+1) + ").");
            terminarTurno();
            
        } else if (piezaDestino.getColor().equals(piezaOrigen.getColor())){
-           System.out.println("Casilla ocupada por una pieza propia, elige otra");
+           mostrarAdvertencia("Casilla ocupada por una pieza propia, elige otra");
        }
        
        else{
+           String nombreAtacante = nombreJugadorActual();
+           String nombreDefensor = jugadorActual.equals("BLANCO") ? jugadorNegro.getUsuario() : jugadorBlanco.getUsuario();
+           
+           
            if (distancia == 1){
                String [] opciones = {"Ataque normal" , "Habilidad especial"};
                 int seleccion = JOptionPane.showOptionDialog(this, "Qué tipo de ataque quiere usar?", "Elegir ataque",JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
@@ -446,12 +530,16 @@ public class ChessBoard extends JFrame {
                     try{
                         piezaOrigen.habilidadEspecial(piezaDestino);
                         actualizarTableroVisual();
-                        System.out.println("Habilidad especial lanzada al oponente");
+                        
                        
                         if(!piezaDestino.estaViva()){
                             tablero.setPieza(filaDestino, columnaDestino, null);
                             actualizarTableroVisual();
+                            agregarReporte(nombreAtacante+ " usó habilidad especial y destruye " +obtenerEtiqueta(piezaDestino) + " de " +nombreDefensor + ".");
                             validarVictoria();
+                        } else{
+                            agregarReporte(nombreAtacante + " usó habilidad especial sobre " +nombreDefensor + " (" + obtenerEtiqueta(piezaDestino) + "). Le quedan " + piezaDestino.getEscudo() + " de escudo y " + piezaDestino.getVida() + " de vida.");
+                            
                         }
                         
                         terminarTurno();
@@ -462,10 +550,10 @@ public class ChessBoard extends JFrame {
                 }
                 
                 }
-                else if (distancia == 2 && (distanciaFila == 0 || distanciaColumna == 0) && piezaOrigen instanceof Muerte){
+                else if (distancia == 2 && piezaOrigen instanceof Muerte){
                     
                     if (!caminoLibre(filaOrigen,columnaOrigen,filaDestino, columnaDestino)){
-                        System.out.println("La lanza no puede atravezar piezas entre medio");
+                        mostrarAdvertencia("La lanza no puede atravezar piezas entre medio");
                         return;
                     }
                     
@@ -473,11 +561,12 @@ public class ChessBoard extends JFrame {
                     ((Muerte) piezaOrigen).atacarConLanza(piezaDestino);
                     if (!piezaDestino.estaViva()){
                         tablero.setPieza(filaDestino, columnaDestino, null);
-                        System.out.println("Pieza destruida por la lanza");
+                        agregarReporte(nombreAtacante + " lanzó su lanza y destruyó la pieza " + obtenerEtiqueta(piezaDestino) + " de " + nombreDefensor + ".");
                         validarVictoria();
                     }
                     else{
-                        System.out.println("Objetivo dañado con lanza. Vida restante" + piezaDestino.getVida());
+                        agregarReporte(nombreAtacante + " atacó con lanza a " + nombreDefensor + " (" + obtenerEtiqueta(piezaDestino) + "). Vida restante: " + piezaDestino.getVida() + ".");
+                        
                     }
                     actualizarTableroVisual();
                     terminarTurno(); 
@@ -492,17 +581,20 @@ public class ChessBoard extends JFrame {
                         
                         if(!piezaDestino.estaViva()){
                             tablero.setPieza(filaDestino, columnaDestino, null);
-                            System.out.println("Pieza destruida por el Zombie");
+                            agregarReporte(nombreAtacante + " atacó a través de su Zombie y destruyó la pieza " + obtenerEtiqueta(piezaDestino) + " de " + nombreDefensor + ".");
                             validarVictoria();
                         } else{
-                            System.out.println("Ataque a través de Zombie. Vida restante: " +piezaDestino);
+                            agregarReporte(nombreAtacante + " atacó a través de Zombie a " + nombreDefensor + ". Vida restante: " + piezaDestino.getVida() + ".");
                         }
                         actualizarTableroVisual();
+                        terminarTurno();
                     }else{
-                        System.out.println("Enemigo fuera de alcance");
+                        mostrarAdvertencia("Ese enemigo está fuera de alcance.");
                     }
-                  terminarTurno();  
-                } 
+                   
+                } else{
+                    mostrarAdvertencia("Ese enemigo está fuera de alcance.");
+                }
                 
                 
            
@@ -546,6 +638,7 @@ public class ChessBoard extends JFrame {
               
               JOptionPane.showMessageDialog(this, mensaje, "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
               dispose();
+              new MenuPrincipal(gestor, jugadorBlanco).setVisible(true);
           }
       }
     
@@ -563,6 +656,7 @@ public class ChessBoard extends JFrame {
               
               JOptionPane.showMessageDialog(this, mensaje, "Fin del juego",JOptionPane.INFORMATION_MESSAGE);
               dispose();
+              new MenuPrincipal(gestor,jugadorBlanco).setVisible(true);
           }
       }
 
@@ -612,8 +706,30 @@ public class ChessBoard extends JFrame {
     }
     
     
+    private void mostrarAdvertencia(String mensaje) {
+    areaAdvertencias.setText(mensaje);
+}
     
+    private void agregarReporte(String mensaje){
+        areaReportes.append(mensaje + "\n");
+        areaReportes.setCaretPosition(areaReportes.getDocument().getLength());
+    }
     
-    
+    private void mostrarEstadisticas(Pieza pieza){
+        if (pieza == null){
+            areaEstadisticas.setText("");
+            return;
+        }
+        
+        areaEstadisticas.setText(
+        "Tipo: " + obtenerEtiqueta(pieza) + "\n" +
+        "Color: " + pieza.getColor() + "\n" +
+        "Vida: " + pieza.getVida() + "\n" +
+        "Escudo: " + pieza.getEscudo() + "\n" +
+        "Ataque: " + pieza.getAtaque()
+    );
+        
+        
+    }
     
 }

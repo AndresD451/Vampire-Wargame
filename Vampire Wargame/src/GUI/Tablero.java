@@ -16,9 +16,9 @@ import Pieza.Vampiro;
 public class Tablero {
     
     private static final int SIZE = 6;
-    private Pieza[][] casillas;
-    private Pieza[] piezasBlancas = new Pieza[6];
-    private Pieza[] piezasNegras = new Pieza[6];
+    private final Pieza[][] casillas;
+    private final Pieza[] piezasBlancas = new Pieza[6];
+    private final Pieza[] piezasNegras = new Pieza[6];
     
     public Tablero(){
         casillas = new Pieza[SIZE][SIZE];
@@ -28,23 +28,23 @@ public class Tablero {
     
     private void colocarPiezasIniciales(){
        //Piezas negras (jugador 2)
-       piezasNegras[0] = new HombreLobo(3,6,3,"NEGRO");
-       piezasNegras[1] = new Vampiro (3,5,2,"NEGRO");
-       piezasNegras[2] = new Muerte(4,5,2,"NEGRO");
-       piezasNegras[3] = new Muerte (4,5,2,"NEGRO");
-       piezasNegras[4] = new Vampiro(3,5,2,"NEGRO");
-       piezasNegras[5] = new HombreLobo(3,6,3,"NEGRO");
+       piezasNegras[0] = new HombreLobo(5,5,2,"NEGRO");
+       piezasNegras[1] = new Vampiro (3,4,5,"NEGRO");
+       piezasNegras[2] = new Muerte(4,3,1,"NEGRO");
+       piezasNegras[3] = new Muerte (4,3,1,"NEGRO");
+       piezasNegras[4] = new Vampiro(3,4,5,"NEGRO");
+       piezasNegras[5] = new HombreLobo(5,5,2,"NEGRO");
         for (int i = 0; i < 6; i++)
             casillas[0][i] = piezasNegras[i];
         
         
         //Piezas blancas (jugador 1)
-        piezasBlancas[0] = new HombreLobo(3,6,3,"BLANCO");
-        piezasBlancas[1] = new Vampiro(3,5,2,"BLANCO");
-        piezasBlancas[2] = new Muerte(4,5,2,"BLANCO");
-        piezasBlancas[3] = new Muerte(4,5,2,"BLANCO");
-        piezasBlancas[4] = new Vampiro(3,5,2,"BLANCO");
-        piezasBlancas[5] = new HombreLobo(3,5,3,"BLANCO");
+        piezasBlancas[0] = new HombreLobo(5,5,2,"BLANCO");
+        piezasBlancas[1] = new Vampiro(3,4,5,"BLANCO");
+        piezasBlancas[2] = new Muerte(4,3,1,"BLANCO");
+        piezasBlancas[3] = new Muerte(4,3,1,"BLANCO");
+        piezasBlancas[4] = new Vampiro(3,4,5,"BLANCO");
+        piezasBlancas[5] = new HombreLobo(5,5,2,"BLANCO");
         for (int i = 0; i < 6; i++)
             casillas[5][i] = piezasBlancas[i];
         
